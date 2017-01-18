@@ -6,7 +6,7 @@ DIR_NOW=$( cd $(dirname $0); pwd )
 if [ $# -lt 1 ]
 then
   echo "$0 <date>"
-  echo Need at one input argument: date in YYYYMMDD
+  echo "Need at one input argument: <date> in YYYYMMDD"
   exit 1
 fi
 

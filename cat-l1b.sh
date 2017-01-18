@@ -6,11 +6,11 @@ DIR_NOW=$( cd $(dirname $0); pwd )
 if [ $# -lt 2 ]
 then
   echo "$0 <date> <product> [ <satellite> ]"
-  echo "Need at two input arguments:"
-  echo "- date in YYYYMMDD"
-  echo "- product name: ACC1B, AHK1B, GNV1B, KBR1B"
+  echo "Need at least two input arguments:"
+  echo "- <date> in YYYYMMDD"
+  echo "- <product> name: ACC1B, AHK1B, GNV1B, KBR1B"
   echo "Optional argument:"
-  echo "- GRACE satellite: A or B (default is 'A')"
+  echo "- GRACE <satellite>: A or B (default is 'A')"
   echo "NOTICE:"
   echo " - if <product> is KBR1B, the third input argument is ignored (effectively replaced with 'X')"
   exit 1
