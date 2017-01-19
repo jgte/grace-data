@@ -1,7 +1,7 @@
 #!/bin/bash -u
 
 # keeping track of where I am
-DIR_NOW=$( cd $(dirname $0); pwd )
+DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
 
 if [ $# -lt 1 ]
 then
@@ -36,7 +36,10 @@ WGET_FLAGS="-c -nH --cut-dirs=7 -m -np"
 
 DIR_HERE=$DIR_NOW/L1B/$YEAR/$MONTH/$DAY
 DIR_THERE=$YEAR
-mkdir -p $DIR_HERE
-wget $WGET_FLAGS -P $DIR_HERE --exclude-directories=$FTP_DIR/$DIR_THERE/.snapshot ${FTP_SITE}/$FTP_DIR/$DIR_THERE/$TAR_FILE
+mkdir -p $DIR_HERE || exit $?
 
+# checking if data was already downloaded
+[ ! -e "$DIR_HERE/$TAR_FILE" ] && wget $WGET_FLAGS -P $DIR_HERE --exclude-directories=$FTP_DIR/$DIR_THERE/.snapshot ${FTP_SITE}/$FTP_DIR/$DIR_THERE/$TAR_FILE
 
+#extract contents
+$DIR_NOW/extract-l1b.sh $@

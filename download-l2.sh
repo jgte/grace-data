@@ -1,5 +1,8 @@
 #!/bin/bash -u
 
+# keeping track of where I am
+DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
+
 if [ $# -lt 2 ]
 then
   echo "$0 <source> <version>
@@ -34,11 +37,11 @@ then
   esac
 fi
 
-LOCALDIR=$(cd $(dirname $BASH_SOURCE); pwd)/L2/$SOURCE/RL$VERSION/
+LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
 REMOTEHOST=podaac-ftp.jpl.nasa.gov
 REMOTEDIR=allData/grace/L2/$SOURCE/RL$VERSION/
 USERNAME=anonymous
-PSSWD_FILE=$(cd $(dirname $BASH_SOURCE); pwd)/email.txt
+PSSWD_FILE=$DIR_NOW/email.txt
 if [ ! -e "$PSSWD_FILE" ]
 then
   echo "ERROR: file $PSSWD_FILE missing: create this file with your email in one single line."
@@ -83,4 +86,4 @@ $LFTPCOM
 [ -z "$PREFIX" ] || echo "$LFTPCOM"
 
 #extract contents
-$(cd $(dirname $BASH_SOURCE); pwd)/gunzip-l2.sh $@
+$DIR_NOW/gunzip-l2.sh $@
