@@ -34,12 +34,10 @@ TAR_FILE=${PREFIX}_$YEAR-$MONTH-${DAY}_$VERSION$SUFFIX
 # continue, no host dir, cut 3 dirs, mirror (recursive, timestamp, infinite depth, keep listings), no parent
 WGET_FLAGS="-c -nH --cut-dirs=7 -m -np"
 
-DIR_HERE=$DIR_NOW/L1B/$YEAR/$MONTH/$DAY
+DIR_HERE=$DIR_NOW/L1B/$YEAR
 DIR_THERE=$YEAR
 mkdir -p $DIR_HERE || exit $?
 
 # checking if data was already downloaded
 [ ! -e "$DIR_HERE/$TAR_FILE" ] && wget $WGET_FLAGS -P $DIR_HERE --exclude-directories=$FTP_DIR/$DIR_THERE/.snapshot ${FTP_SITE}/$FTP_DIR/$DIR_THERE/$TAR_FILE
 
-#extract contents
-$DIR_NOW/extract-l1b.sh $@
