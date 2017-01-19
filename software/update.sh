@@ -64,3 +64,6 @@ fi
 
 #compile the software
 make -C $SW_DIR
+
+#create links to this dir
+ln -svf $(basename $SW_DIR)/*.e .
