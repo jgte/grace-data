@@ -9,7 +9,7 @@ then
   echo "Need at least one input arguments."
   echo "Either:"
   echo "  - <date> in YYYYMMDD"
-  echo "  - <product> name: ACC1B, AHK1B, GNV1B, KBR1B, NAVSOL, SCAATT, THRDAT"
+  echo "  - <product> name: ACC1B, AHK1B, GNV1B, KBR1B, MAS1B, SCA1B, THR1B, CLK1B, GPS1B, IHK1B, MAG1B, TIM1B, TNK1B, USO1B, VSL1B"
   echo "  Optional argument:"
   echo "   - GRACE <satellite>: A or B (default is 'A')"
   echo "  NOTICE:"
@@ -39,18 +39,14 @@ else
     SAT=$3
   fi
   [ "$PRODUCT" == "KBR1B" ] && SAT="X"
+  # extract file from archive
+  $DIR_NOW/extract-l1b.sh $@ || exit $?
   # building package filename
-  DAT_FILE=$(ls $DIR_NOW/L1B/$YEAR/$MONTH/$DAY/${PRODUCT}_$YEAR-$MONTH-${DAY}_${SAT}_*.dat | tail -n1)
+  DAT_FILE=$(ls $DIR_NOW/L1B/$YEAR/${PRODUCT}_$YEAR-$MONTH-${DAY}_${SAT}_*.dat | tail -n1)
 fi
 
-# checking if data was already downloaded and expanded
-if [ ! -e "$DAT_FILE" ]
-then
-  # need to get it
-  $DIR_NOW/download-l1b.sh $DATE || exit $?
-fi
-
+#show contents
 $CONV -binfile $DAT_FILE
 
-
+rm -f $DAT_FILE
 
