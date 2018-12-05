@@ -28,15 +28,33 @@ then
    DAT_FILE="$1"
 else
   DATE=$1
+  if [ "${#DATE}" -ne 8 ]
+  then
+    echo "ERROR: expecting date to be in YYYYMMDD format, with length equal to 8, not ${#DATE}."
+    exit 3
+  fi
   YEAR=${DATE:0:4}
   MONTH=${DATE:4:2}
   DAY=${DATE:6:2}
   PRODUCT=$2
+  case $2 in
+    ACC1B|AHK1B|GNV1B|KBR1B|MAS1B|SCA1B|THR1B|CLK1B|GPS1B|IHK1B|MAG1B|TIM1B|TNK1B|USO1B|VSL1B)
+      PRODUCT=$2;;
+    *)
+      echo "ERROR: cannot understand product $2"
+      exit 3;;
+  esac
   if [ $# -lt 3 ]
   then
     SAT='A'
   else
-    SAT=$3
+  case $3 in
+      A|B|X)
+      SAT=$3;;
+    *)
+      echo "ERROR: cannot understand satellite $3"
+      exit 3;;
+  esac
   fi
   [ "$PRODUCT" == "KBR1B" ] && SAT="X"
   # extract file from archive
