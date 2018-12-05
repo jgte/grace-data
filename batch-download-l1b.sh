@@ -3,7 +3,13 @@
 # keeping track of where I am
 DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
 
-YEAR_LIST=$(seq 2009 2016)
+if [ $# -lt 1 ]
+then
+  echo "ERROR: need list of 4-digit years"
+  exit 3
+fi
+
+YEAR_LIST=$@
 MONTH_LIST=$(seq -w 1 12)
 DAY_LIST=$(seq -w 1 31)
 
