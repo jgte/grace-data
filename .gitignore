@@ -3,3 +3,4 @@ L2
 *.log
 email.txt
 *.sublime-workspace
+.DS_Store
