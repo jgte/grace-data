@@ -5,37 +5,49 @@ DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
 
 if [ $# -lt 2 ]
 then
-  echo "$0 <source> <version>
+  echo "$0 <source> <version> [ echo ] [ manual ]
 Need at least two input arguments:
 - the <source> can be CSR, GFZ or JPL
-- the <version> can be (the 'RL' part is added internally), as of 11/2015:
-  - CSR: 04, 05, 05_mean_field
-  - GFZ: 04, 04_UNCON, 05, 05_WEEKLY
-  - JPL: 04.1, 05, 05.1"
+- the <version> can be (the 'RL' part is added internally), as of 10/2018:
+  - CSR: 05, 05_mean_field, 06
+  - GFZ: 05, 05_WEEKLY, 06
+  - JPL: 05, 05.1, 06"
   exit 3
 fi
 
 #data characteristics
 SOURCE=$1
 VERSION=$2
+GLOB="GSM-2*"
 
-if [ $# -lt 3 ]
-then
-  case $SOURCE in
-  CSR)
-    GLOB="GSM-2*_0060_*"
-  ;;
-  GFZ)
-    GLOB="GSM-2*"
-  ;;
-  JPL)
-    GLOB="GSM-2*"
+case $SOURCE in
+CSR)
+  case $VERSION in
+  06)
+    #do nothing
   ;;
   *)
-    echo "$0: ERROR: unknown source '$SOURCE'."
-    exit 3
+    GLOB+="_0060_*"
+  ;;
   esac
-fi
+;;
+GFZ)
+  #do nothing
+;;
+JPL)
+  #do nothing
+;;
+*)
+  echo "$0: ERROR: unknown source '$SOURCE'."
+  exit 3
+esac
+
+if [[ ! "$@" == "${@/echo}" ]]
+then
+  ECHO=echo
+else
+  ECHO=
+fi    
 
 LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
 REMOTEHOST=podaac-ftp.jpl.nasa.gov
@@ -52,22 +64,15 @@ fi
 LOG=${0%.sh}.log
 
 #create sink directory
-[ ! -d $LOCALDIR ] && mkdir -p $LOCALDIR
+[ ! -d $LOCALDIR ] && $ECHO mkdir -p $LOCALDIR
 
 LFTPARGS="--only-newer --no-empty-dirs --loop --parallel=4 --include-glob=$GLOB"
 LFTPOPEN="set ftp:use-mdtm yes && open -u $USERNAME,$PSSWD ftp://$REMOTEHOST"
 
 if [[ ! "${@//manual/}" == "$@" ]]
 then
-  lftp -e "$LFTPOPEN"
+  $ECHO lftp -e "$LFTPOPEN/$REMOTEDIR"
   exit
-fi
-
-if [[ ! "${@//echo/}" == "$@" ]]
-then
-  PREFIX=echo
-else
-  PREFIX=
 fi
 
 #mirror remote to local
@@ -79,11 +84,11 @@ mirror $LFTPARGS $REMOTEDIR $LOCALDIR --log $LOG"
   LFTPCOM=${LFTPCOM/--loop/}
 }
 
-$PREFIX lftp -e "$LFTPOPEN" <<%
+$ECHO lftp -e "$LFTPOPEN" <<%
 $LFTPCOM
 %
 
-[ -z "$PREFIX" ] || echo "$LFTPCOM"
+[ -z "$ECHO" ] || echo "$LFTPCOM"
 
 #extract contents
-$DIR_NOW/gunzip-l2.sh $@
+$ECHO $DIR_NOW/extract-l2.sh $@
