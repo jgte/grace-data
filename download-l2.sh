@@ -49,29 +49,70 @@ else
   ECHO=
 fi    
 
+REMOTEHOST=https://podaac-tools.jpl.nasa.gov
 LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
-REMOTEHOST=podaac-ftp.jpl.nasa.gov
-REMOTEDIR=allData/grace/L2/$SOURCE/RL$VERSION/
-USERNAME=anonymous
-PSSWD_FILE=$DIR_NOW/email.txt
-if [ ! -e "$PSSWD_FILE" ]
+SECRETFILE=$DIR_NOW/secret.txt
+
+if [ ! -e "$SECRETFILE" ]
 then
-  echo "ERROR: file $PSSWD_FILE missing: create this file with your email in one single line."
+  echo "ERROR: file $SECRETFILE missing: create this file with your PO.DAAC username and password, each in one single line."
   exit 3
-else
-  PSSWD=$(cat "$PSSWD_FILE")
 fi
+
+USERNAME=$(head -n1 $SECRETFILE)
+PASSWORD=$(tail -n1 $SECRETFILE)
 LOG=${0%.sh}.log
+
+#uncomment this if you haven't downloaded GRACE data yet:
+
+# REMOTEDIR=drive/files/allData/grace/L2/$SOURCE/RL$VERSION/
+# wget \
+#   --user=$USERNAME \
+#   --password=$PASSWORD \
+#   --recursive \
+#   --timestamping \
+#   --continue \
+#   --no-parent \
+#   --no-directories \
+#   --accept "*.gz" \
+#   --show-progress \
+#   --verbose \
+#   --directory-prefix=$LOCALDIR \
+#   $REMOTEHOST/$REMOTEDIR
+
+for y in 2018 2019
+do
+  REMOTEDIR=drive/files/allData/gracefo/L2/$SOURCE/RL$VERSION/$y
+  wget \
+    --user=$USERNAME \
+    --password=$PASSWORD \
+    --recursive \
+    --timestamping \
+    --continue \
+    --no-parent \
+    --no-directories \
+    --accept "*.gz" \
+    --show-progress \
+    --verbose \
+    --directory-prefix=$LOCALDIR \
+    $REMOTEHOST/$REMOTEDIR
+done
+
+exit
+
+#outdated FTP method follows
+
+LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
 
 #create sink directory
 [ ! -d $LOCALDIR ] && $ECHO mkdir -p $LOCALDIR
 
 LFTPARGS="--only-newer --no-empty-dirs --loop --parallel=4 --include-glob=$GLOB"
-LFTPOPEN="set ftp:use-mdtm yes && open -u $USERNAME,$PSSWD ftp://$REMOTEHOST"
+LFTPOPEN="user $USERNAME $PASSWORD; open $REMOTEHOST"
 
 if [[ ! "${@//manual/}" == "$@" ]]
 then
-  $ECHO lftp -e "$LFTPOPEN/$REMOTEDIR"
+  $ECHO lftp -e "$LFTPOPEN"
   exit
 fi
 

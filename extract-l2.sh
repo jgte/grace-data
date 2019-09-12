@@ -6,9 +6,9 @@ then
 Need at least two input arguments:
 - the <source> can be CSR, GFZ or JPL
 - the <version> can be (the 'RL' part is added internally), as of 11/2015:
-  - CSR: 04, 05, 05_mean_field
-  - GFZ: 04, 04_UNCON, 05, 05_WEEKLY
-  - JPL: 04.1, 05, 05.1"
+  - CSR: 05, 05_mean_field, 06
+  - GFZ: 05, 05_WEEKLY, 06
+  - JPL: 05, 05.1, 06"
   exit 3
 fi
 

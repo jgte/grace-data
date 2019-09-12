@@ -1,6 +1,6 @@
 L1B
 L2
 *.log
-email.txt
+secret.txt
 *.sublime-workspace
 .DS_Store
