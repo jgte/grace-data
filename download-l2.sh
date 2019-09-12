@@ -98,6 +98,9 @@ do
     $REMOTEHOST/$REMOTEDIR
 done
 
+#extract contents
+$ECHO $DIR_NOW/extract-l2.sh $@
+
 exit
 
 #outdated FTP method follows
@@ -131,5 +134,3 @@ $LFTPCOM
 
 [ -z "$ECHO" ] || echo "$LFTPCOM"
 
-#extract contents
-$ECHO $DIR_NOW/extract-l2.sh $@
