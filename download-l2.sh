@@ -80,7 +80,7 @@ LOG=${0%.sh}.log
 #   --directory-prefix=$LOCALDIR \
 #   $REMOTEHOST/$REMOTEDIR
 
-for y in 2018 2019
+for y in 2019 2020
 do
   REMOTEDIR=drive/files/allData/gracefo/L2/$SOURCE/RL$VERSION/$y
   wget \
