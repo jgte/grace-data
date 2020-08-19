@@ -3,22 +3,62 @@
 # keeping track of where I am
 DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
 
-if [ $# -lt 1 ]
-then
-  echo "$0 <date>"
-  echo "Need at one input argument: <date> in YYYYMMDD"
-  exit 1
-fi
-
-#data characteristics
+#default data characteristics
 VERSION=02
 SOURCE=JPL
+
+if [ $# -lt 1 ]
+then
+  echo "$0 <date> [ <version> [ <source> ] ]"
+  echo "Need one input argument: <date> in YYYYMMDD"
+  echo
+  echo "Optional inputs:"
+  echo " - version : release versions, defaults to '$VERSION'"
+  echo " - source  : data source institute, defaults to '$SOURCE'"
+  exit 1
+fi
 
 #parsing inputs
 DATE=$1
 YEAR=${DATE:0:4}
 MONTH=${DATE:4:2}
 DAY=${DATE:6:2}
+
+[ $# -ge 2 ] && VERSION="$2"
+[ $# -ge 3 ] && SOURCE="$3"
+
+REMOTEHOST=https://podaac-tools.jpl.nasa.gov
+REMOTEDIR=drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/$YEAR
+LOCALDIR=$DIR_NOW/L1B/$SOURCE/RL$VERSION/
+LOG=${0%.sh}.log
+
+SECRETFILE=$DIR_NOW/secret.txt
+if [ ! -e "$SECRETFILE" ]
+then
+  echo "ERROR: file $SECRETFILE missing: create this file with your PO.DAAC username and password, each in one single line."
+  exit 3
+fi
+USERNAME=$(head -n1 $SECRETFILE)
+PASSWORD=$(tail -n1 $SECRETFILE)
+
+mkdir -p $LOCALDIR || exit $?
+wget \
+  --user=$USERNAME \
+  --password=$PASSWORD \
+  --recursive \
+  --timestamping \
+  --continue \
+  --no-parent \
+  --no-directories \
+  --accept "*$YEAR-$MONTH-$DAY*.gz" \
+  --show-progress \
+  --verbose \
+  --directory-prefix=$LOCALDIR \
+  $REMOTEHOST/$REMOTEDIR
+
+exit
+
+#outdated FTP method follows
 
 #where to download stuff
 FTP_SITE=ftp://podaac-ftp.jpl.nasa.gov
