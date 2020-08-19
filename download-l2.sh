@@ -6,7 +6,7 @@ DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
 if [ $# -lt 2 ]
 then
   echo "$0 <source> <version> [ echo ] [ manual ]
-Need at least two input arguments:
+
 - the <source> can be CSR, GFZ or JPL
 - the <version> can be (the 'RL' part is added internally), as of 10/2018:
   - CSR: 05, 05_mean_field, 06

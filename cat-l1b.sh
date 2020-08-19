@@ -12,7 +12,6 @@ SOURCE=JPL
 if [ $# -lt 1 ]
 then
   echo "$0 [ <date> <product> [ <sat> [ <version> [ <source> ] ] ] | <dat file> ]"
-  echo "Need at least one input arguments."
   echo
   echo "Either:"
   echo "  - <date> in YYYYMMDD"

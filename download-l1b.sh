@@ -10,7 +10,6 @@ SOURCE=JPL
 if [ $# -lt 1 ]
 then
   echo "$0 <date> [ <version> [ <source> ] ]"
-  echo "Need one input argument: <date> in YYYYMMDD"
   echo
   echo "Optional inputs:"
   echo " - version : release versions, defaults to '$VERSION'"

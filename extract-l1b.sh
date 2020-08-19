@@ -11,7 +11,7 @@ SOURCE=JPL
 if [ $# -lt 2 ]
 then
   echo "$0 <date> <product> [ <sat> [ <version> [ <source> ] ] ]"
-  echo "Need two input arguments."
+  echo
   echo "  - <date> in YYYYMMDD"
   echo "  - <product> name: ACC1B, AHK1B, GNV1B, KBR1B, MAS1B, SCA1B, THR1B, CLK1B, GPS1B, IHK1B, MAG1B, TDP1B, TIM1B, TNK1B, USO1B, VSL1B"
   echo
