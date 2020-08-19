@@ -47,21 +47,20 @@ then
   ECHO=echo
 else
   ECHO=
-fi    
+fi
 
 REMOTEHOST=https://podaac-tools.jpl.nasa.gov
 LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
-SECRETFILE=$DIR_NOW/secret.txt
+LOG=${0%.sh}.log
 
+SECRETFILE=$DIR_NOW/secret.txt
 if [ ! -e "$SECRETFILE" ]
 then
   echo "ERROR: file $SECRETFILE missing: create this file with your PO.DAAC username and password, each in one single line."
   exit 3
 fi
-
 USERNAME=$(head -n1 $SECRETFILE)
 PASSWORD=$(tail -n1 $SECRETFILE)
-LOG=${0%.sh}.log
 
 #uncomment this if you haven't downloaded GRACE data yet:
 
