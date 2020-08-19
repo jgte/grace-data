@@ -2,7 +2,7 @@
 
 Scripts to download L1B and L2 data of the Gravity Recovery and Climate Experiment satellites from the [PO.DAAC Drive](https://podaac-tools.jpl.nasa.gov/drive/).
 
-The file `secret.txt` must be created in the same dir as the rest of the scripts, containing two lines with the username and password (one in each line) with the credentials to access the PO.DAAC Drive.
+The file `secret.txt` must be created in the same dir as the rest of the scripts, containing two lines with the user name and password (one in each line) with the credentials to access the PO.DAAC Drive.
 
 The data is placed in `L1B/$SOURCE/RL$VERSION/` or `L2/$SOURCE/RL$VERSION/`, with $SOURCE one of CSR, GFZ, JPL, and $VERSION a relevant L1B/L2 data release version. Note that not all combinations of L1B/L2, $SOURCE and $VERSION are available, refer to the PO.DAAC Drive.
 
@@ -57,4 +57,4 @@ Optional inputs:
 ```
 - `software/update.sh`: download and compile the `Bin2AsciiLevel1` utility needed to read the binary L1B data (no arguments).
 
-The `cat-l1b.sh` script calls the `extract-l1b.sh` script in case the decompressed data is not available, which calls the `download-l1b.sh` in case the compressed data is not available.
+The `cat-l1b.sh` script calls the `extract-l1b.sh` script in case the uncompressed data is not available, which calls the `download-l1b.sh` in case the compressed data is not available.
