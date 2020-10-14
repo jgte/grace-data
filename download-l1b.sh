@@ -2,14 +2,19 @@
 
 # keeping track of where I am
 DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
+#constants: filename stuff
+PREFIX=grace_1B
+SUFFIX=.tgz
 
 #default data characteristics
-VERSION=02
+VERSION=03
 SOURCE=JPL
 
 if [ $# -lt 1 ]
 then
   echo "$0 <date> [ <version> [ <source> ] ]"
+  echo
+  echo " - <date> in YYYYMM"
   echo
   echo "Optional inputs:"
   echo " - version : release versions, defaults to '$VERSION'"
@@ -21,16 +26,27 @@ fi
 DATE=$1
 YEAR=${DATE:0:4}
 MONTH=${DATE:4:2}
-DAY=${DATE:6:2}
-
 [ $# -ge 2 ] && VERSION="$2"
 [ $# -ge 3 ] && SOURCE="$3"
+# building package filename
+TAR_FILE=${PREFIX}_$YEAR-${MONTH}_$VERSION$SUFFIX
+#inform
+echo "Downloading v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH: $TAR_FILE"
 
+#define coordinates of remote server
 REMOTEHOST=https://podaac-tools.jpl.nasa.gov
-REMOTEDIR=drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/$YEAR
-LOCALDIR=$DIR_NOW/L1B/$SOURCE/RL$VERSION/
+REMOTEDIR=drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/
+LOCALDIR=$DIR_NOW/L1B/$SOURCE/RL$VERSION
 LOG=${0%.sh}.log
 
+#don't download unless necessary
+if [ -e "$LOCALDIR/$TAR_FILE" ]
+then
+  echo "File $TAR_FILE already downloaded"
+  exit
+fi
+
+#retrieve password
 SECRETFILE=$DIR_NOW/secret.txt
 if [ ! -e "$SECRETFILE" ]
 then
@@ -40,6 +56,7 @@ fi
 USERNAME=$(head -n1 $SECRETFILE)
 PASSWORD=$(tail -n1 $SECRETFILE)
 
+#fetch the data
 mkdir -p $LOCALDIR || exit $?
 wget \
   --user=$USERNAME \
@@ -49,11 +66,12 @@ wget \
   --continue \
   --no-parent \
   --no-directories \
-  --accept "*$YEAR-$MONTH-$DAY*.gz" \
+  --accept "$TAR_FILE" \
   --show-progress \
   --verbose \
   --directory-prefix=$LOCALDIR \
   $REMOTEHOST/$REMOTEDIR
+
 
 exit
 
