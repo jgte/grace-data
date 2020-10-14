@@ -9,40 +9,47 @@ The data is placed in `L1B/$SOURCE/RL$VERSION/` or `L2/$SOURCE/RL$VERSION/`, wit
 The following scripts are included:
 - `cat-l1b.sh`: show the contents of the L1B data (one day and product at a time):
 ```
-./cat-l1b.sh [ <date> <product> [ <sat> [ <version> [ <source> ] ] ] | <dat file> ]
+cat-l1b.sh [ <date> <product> [ <sat> [ <version> [ <source> ] ] ] | <dat file> ]
 
 Either:
-  - <date> in YYYYMMDD
+  - <date> in YYYYMM[DD]
   - <product> name: ACC1B, AHK1B, GNV1B, KBR1B, MAS1B, SCA1B, THR1B, CLK1B, GPS1B, IHK1B, MAG1B, TIM1B, TNK1B, USO1B, VSL1B
   Optional argument:
    - sat     : GRACE A or B, defaults to 'A' (irrelevant if <product> is 'KBR1B')
-   - version : release versions, defaults to '02'
+   - version : release versions, defaults to '03'
    - source  : data source institute, defaults to 'JPL'
   NOTICE:
    - if <product> is KBR1B, the third input argument is ignored (effectively replaced with 'X')
 
 Or:
   - <dat file>, with complete path
+
+NOTICE: v03 data is available in monthly files; all other versions are available in daily files
  ```
 - `extract-l1b.sh`: extract the contents of the L1B data (one day and product at a time):
 ```
-./extract-l1b.sh <date> <product> [ <sat> [ <version> [ <source> ] ] ]
+extract-l1b.sh <date> <product> [ <sat> [ <version> [ <source> ] ] ]
 
-  - <date> in YYYYMMDD
-  - <product> name: ACC1B, AHK1B, GNV1B, KBR1B, MAS1B, SCA1B, THR1B, CLK1B, GPS1B, IHK1B, MAG1B, TDP1B, TIM1B, TNK1B, USO1B, VSL1B
+ - <date> in YYYYMM
+ - <product> name: ACC1B, AHK1B, GNV1B, KBR1B, MAS1B, SCA1B, THR1B, CLK1B, GPS1B, IHK1B, MAG1B, TDP1B, TIM1B, TNK1B, USO1B, VSL1B
 
 Optional inputs:
  - sat     : GRACE A or B, defaults to 'A' (irrelevant if <product> is 'KBR1B')
- - version : release versions, defaults to '02'
+ - version : release versions, defaults to '03'
  - source  : data source institute, defaults to 'JPL'
+ NOTICE: v03 data is available in monthly files; all other versions are available in daily files
 ```
 - `download-l1b.sh`: download the L1B data (one day at a time);
 ```
 ./download-l1b.sh <date> [ <version> [ <source> ] ]
 
+ - <date> in YYYYMM[DD]
+
 Optional inputs:
- - version : release versions, defaults to '02'
+ - version : release versions, defaults to '03'
  - source  : data source institute, defaults to 'JPL'
+
+ NOTICE: v03 data is available in monthly files; all other versions are available in daily files
 ```
 - `batch-download-l1b.sh`: download the L1B data for the given 4-digit list of years;
 - `download-l2.sh`: download the L2 data (all data for one institute and release version);
@@ -51,6 +58,16 @@ Optional inputs:
 
 - the <source> can be CSR, GFZ or JPL
 - the <version> can be (the 'RL' part is added internally), as of 10/2018:
+  - CSR: 05, 05_mean_field, 06
+  - GFZ: 05, 05_WEEKLY, 06
+  - JPL: 05, 05.1, 06
+```
+- `extract-l2.sh`: extract the contents of the L2 data (all data for one institute and release version):
+```
+./extract-l2.sh <source> <version>
+Need at least two input arguments:
+- the <source> can be CSR, GFZ or JPL
+- the <version> can be (the 'RL' part is added internally), as of 11/2015:
   - CSR: 05, 05_mean_field, 06
   - GFZ: 05, 05_WEEKLY, 06
   - JPL: 05, 05.1, 06

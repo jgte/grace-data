@@ -4,7 +4,6 @@
 DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
 #constants: filename stuff
 PREFIX=grace_1B
-SUFFIX=.tgz
 
 #default data characteristics
 VERSION=03
@@ -12,13 +11,16 @@ SOURCE=JPL
 
 if [ $# -lt 1 ]
 then
-  echo "$0 <date> [ <version> [ <source> ] ]"
-  echo
-  echo " - <date> in YYYYMM"
-  echo
-  echo "Optional inputs:"
-  echo " - version : release versions, defaults to '$VERSION'"
-  echo " - source  : data source institute, defaults to '$SOURCE'"
+  echo "\
+$0 <date> [ <version> [ <source> ] ]
+
+ - <date> in YYYYMM[DD]
+
+Optional inputs:
+ - version : release versions, defaults to '$VERSION'
+ - source  : data source institute, defaults to '$SOURCE'
+
+ NOTICE: v03 data is available in monthly files; all other versions are available in daily files"
   exit 1
 fi
 
@@ -29,14 +31,20 @@ MONTH=${DATE:4:2}
 [ $# -ge 2 ] && VERSION="$2"
 [ $# -ge 3 ] && SOURCE="$3"
 # building package filename
-TAR_FILE=${PREFIX}_$YEAR-${MONTH}_$VERSION$SUFFIX
-#inform
-echo "Downloading v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH: $TAR_FILE"
-
-#define coordinates of remote server
+if [ "$VERSION" == "03" ]
+then
+  TAR_FILE=${PREFIX}_$YEAR-${MONTH}_$VERSION.tgz
+  REMOTEDIR=drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/
+  MSG="Downloading v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH: $TAR_FILE"
+else
+  DAY=${DATE:6:2}
+  TAR_FILE=${PREFIX}_$YEAR-${MONTH}-${DAY}_$VERSION.tar.gz
+  REMOTEDIR=drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/$YEAR
+  MSG="Downloading v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH-$DAY: $TAR_FILE"
+fi
+#define local and remote coordinates
 REMOTEHOST=https://podaac-tools.jpl.nasa.gov
-REMOTEDIR=drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/
-LOCALDIR=$DIR_NOW/L1B/$SOURCE/RL$VERSION
+LOCALDIR=$DIR_NOW/L1B/$SOURCE/RL$VERSION/$YEAR
 LOG=${0%.sh}.log
 
 #don't download unless necessary
@@ -50,11 +58,13 @@ fi
 SECRETFILE=$DIR_NOW/secret.txt
 if [ ! -e "$SECRETFILE" ]
 then
-  echo "ERROR: file $SECRETFILE missing: create this file with your PO.DAAC username and password, each in one single line."
+  echo "ERROR:download-l1b.sh: file $SECRETFILE missing: create this file with your PO.DAAC username and password, each in one single line."
   exit 3
 fi
 USERNAME=$(head -n1 $SECRETFILE)
 PASSWORD=$(tail -n1 $SECRETFILE)
+
+echo "$MSG"
 
 #fetch the data
 mkdir -p $LOCALDIR || exit $?
@@ -71,30 +81,3 @@ wget \
   --verbose \
   --directory-prefix=$LOCALDIR \
   $REMOTEHOST/$REMOTEDIR
-
-
-exit
-
-#outdated FTP method follows
-
-#where to download stuff
-FTP_SITE=ftp://podaac-ftp.jpl.nasa.gov
-FTP_DIR=allData/grace/L1B/$SOURCE/RL$VERSION/
-
-#filename stuff
-PREFIX=grace_1B
-SUFFIX=.tar.gz
-
-# building package filename
-TAR_FILE=${PREFIX}_$YEAR-$MONTH-${DAY}_$VERSION$SUFFIX
-
-# continue, no host dir, cut 3 dirs, mirror (recursive, timestamp, infinite depth, keep listings), no parent
-WGET_FLAGS="-c -nH --cut-dirs=7 -m -np"
-
-DIR_HERE=$DIR_NOW/L1B/$YEAR
-DIR_THERE=$YEAR
-mkdir -p $DIR_HERE || exit $?
-
-# checking if data was already downloaded
-[ ! -e "$DIR_HERE/$TAR_FILE" ] && wget $WGET_FLAGS -P $DIR_HERE --exclude-directories=$FTP_DIR/$DIR_THERE/.snapshot ${FTP_SITE}/$FTP_DIR/$DIR_THERE/$TAR_FILE
-
