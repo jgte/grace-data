@@ -2,6 +2,8 @@
 
 # keeping track of where I am
 DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
+DIR_NOW=$(pwd)
+
 #constants: filename stuff
 PREFIX=grace_1B
 
@@ -30,6 +32,8 @@ fi
 DATE=$1
 YEAR=${DATE:0:4}
 MONTH=${DATE:4:2}
+DAY=${DATE:6:2}
+
 PRODUCT=$2
 [ $# -ge 3 ] && SAT="$3"
 [ $# -ge 4 ] && VERSION="$4"
@@ -39,19 +43,21 @@ PRODUCT=$2
 if [ "$VERSION" == "03" ]
 then
   TAR_FILE=${PREFIX}_$YEAR-${MONTH}_$VERSION.tgz
-  DAT_FILE=${PRODUCT}_$YEAR-${MONTH}_$VERSION.dat
+  #DAT_FILE=${PRODUCT}_$YEAR-${MONTH}_$VERSION.dat
+    DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_${SAT}_$VERSION.dat
   MSG="Extracting v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH: $TAR_FILE"
 else
   DAY=${DATE:6:2}
   TAR_FILE=${PREFIX}_$YEAR-${MONTH}-${DAY}_$VERSION.tar.gz
-  DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_$VERSION.dat
+  #DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_$VERSION.dat
+    DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_${SAT}_$VERSION.dat
   MSG="Extracting v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH-$DAY: $TAR_FILE"
 fi
 #define local coordinates
 LOCALDIR=$DIR_NOW/L1B/$SOURCE/RL$VERSION/$YEAR
 
 #make sure tar file is available
-[ -e "$LOCALDIR/$TAR_FILE" ] || $DIR_NOW/download-l1b.sh $DATE $VERSION $SOURCE || exit $?
+[ -e "$LOCALDIR/$TAR_FILE" ] || "$DIR_NOW/download-l1b.sh" $DATE $VERSION $SOURCE || exit $?
 #double check
 if [ ! -e "$LOCALDIR/$TAR_FILE" ]
 then
@@ -61,9 +67,15 @@ fi
 
 if [ -e "$LOCALDIR/$DAT_FILE" ]
 then
-  echo "Already extracted $DAT_FILE"
+	echo "Already extracted $DAT_FILE"
 else
-  echo "$MSG"
-  # extracting
-  tar -xvmzk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --include=$PRODUCT*_${SAT}_*.dat || exit $?
+	echo "$MSG"
+ # extracting
+ #find "$LOCALDIR/" -name '$PRODUCT*_${SAT}_*.dat' | tar -xvmk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --null --files-from - || exit $?
+	if [ "$VERSION" == "03" ]
+	then
+		tar -xvmk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --wildcards --no-anchored $DAT_FILE* || exit $?
+	else
+		tar -xvmzk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --wildcards --no-anchored $DAT_FILE* || exit $?
+	fi
 fi
