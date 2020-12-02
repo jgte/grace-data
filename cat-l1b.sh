@@ -1,8 +1,7 @@
 #!/bin/bash -u
 
 # keeping track of where I am
-DIR_NOW="$(cd $(dirname $BASH_SOURCE); pwd )"
-DIR_NOW=$(pwd)
+DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd )
 
 #constants: filename stuff
 PREFIX=grace_1B
@@ -33,12 +32,6 @@ Or:
 NOTICE: v03 data is available in monthly files; all other versions are available in daily files"
   exit 1
 fi
-
-# echo ' '
-# echo $DIR_NOW
-# echo ' '
-# echo $(pwd)
-# echo ' '
 
 # converter
 CONV=$(find "$DIR_NOW/software" -name Bin2AsciiLevel1.e | sort | tail -n1)
@@ -93,6 +86,6 @@ then
 fi
 
 #show contents
-"$CONV" -binfile "$LOCALDIR/$DAT_PROD" [-ascfile "$LOCALDIR/$DAT_PROD"] 
+"$CONV" -binfile "$LOCALDIR/$DAT_PROD" [ -ascfile "$LOCALDIR/$DAT_PROD" ] 
 
 
