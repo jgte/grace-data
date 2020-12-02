@@ -40,34 +40,10 @@ PASSWORD=$(tail -n1 "$SECRETFILE")
 #decompress package (if not already)
 [ ! -d "$SW_DIR" ] && tar -x -C "$LOCAL_DIR" -f "$LOCAL_FILE" -v
 
-(find "$SW_DIR" -name Makefile) | cat  > temfile.txt
-filename=temfile.txt 
+
 #need to tweak the make files
 
-
-# for i in $(cat temfile.txt)
-# do
-  # echo "$i"
-  # if [ ! -z $(grep '^CFLAGS = $' "$i") ] || [ ! -z $(grep '^CFLAGS =$' "$i") ]
-  # then
-    # CFLAGS=$(echo "
-      # -Wno-return-type
-      # -Wno-pointer-sign
-      # -Wno-implicit-int
-      # -Wno-implicit-function-declaration
-      # -Wno-format
-      # -Wno-pointer-bool-conversion
-      # -Wno-comment
-      # -Wno-incompatible-pointer-types
-    # " |tr '\n' ' '|tr -s ' ')
-    # echo "Adding appropriate compiler flags to $i"
-    # sed "s/CFLAGS =/CFLAGS = ${CFLAGS}/" "$i" > "$i".tmp
-    # mv -fv "$i".tmp "$i"
-  # fi
-# done
-
-# (find "$SW_DIR" -name Makefile) |
-while read i
+find "$SW_DIR" -name Makefile | while read i
 do 
 
 	  echo "$i"
@@ -89,9 +65,8 @@ do
 		mv -fv "$i".tmp "$i"
 	  fi
 
-done < temfile.txt
-echo ' '
-echo 'hello'
+done
+
 #need to tweak some code
 for i in gps1x2rnx.c Bin2AsciiLevel1.c
 do
