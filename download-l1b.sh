@@ -2,7 +2,6 @@
 
 # keeping track of where I am
 DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
-DIR_NOW=$(pwd)
 
 #constants: filename stuff
 PREFIX=grace_1B
