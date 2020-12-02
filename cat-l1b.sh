@@ -86,6 +86,6 @@ then
 fi
 
 #show contents
-"$CONV" -binfile "$LOCALDIR/$DAT_PROD" [ -ascfile "$LOCALDIR/$DAT_PROD" ] 
+"$CONV" -binfile "$LOCALDIR/$DAT_PROD"
 
 
