@@ -2,6 +2,7 @@
 
 # keeping track of where I am
 DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd)
+
 #constants: filename stuff
 PREFIX=grace_1B
 
@@ -34,12 +35,12 @@ MONTH=${DATE:4:2}
 if [ "$VERSION" == "03" ]
 then
   TAR_FILE=${PREFIX}_$YEAR-${MONTH}_$VERSION.tgz
-  REMOTEDIR=drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/
+  REMOTEDIR=/drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/
   MSG="Downloading v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH: $TAR_FILE"
 else
   DAY=${DATE:6:2}
   TAR_FILE=${PREFIX}_$YEAR-${MONTH}-${DAY}_$VERSION.tar.gz
-  REMOTEDIR=drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/$YEAR
+  REMOTEDIR=/drive/files/allData/grace/L1B/$SOURCE/RL$VERSION/$YEAR/
   MSG="Downloading v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH-$DAY: $TAR_FILE"
 fi
 #define local and remote coordinates
@@ -61,23 +62,15 @@ then
   echo "ERROR:download-l1b.sh: file $SECRETFILE missing: create this file with your PO.DAAC username and password, each in one single line."
   exit 3
 fi
-USERNAME=$(head -n1 $SECRETFILE)
-PASSWORD=$(tail -n1 $SECRETFILE)
+USERNAME=$(head -n1 "$SECRETFILE")
+PASSWORD=$(tail -n1 "$SECRETFILE")
 
 echo "$MSG"
 
 #fetch the data
-mkdir -p $LOCALDIR || exit $?
+mkdir -p "$LOCALDIR" || exit $?
 wget \
   --user=$USERNAME \
   --password=$PASSWORD \
-  --recursive \
-  --timestamping \
-  --continue \
-  --no-parent \
-  --no-directories \
-  --accept "$TAR_FILE" \
-  --show-progress \
-  --verbose \
-  --directory-prefix=$LOCALDIR \
-  $REMOTEHOST/$REMOTEDIR
+  --directory-prefix="$LOCALDIR" \
+  $REMOTEHOST/$REMOTEDIR/$TAR_FILE

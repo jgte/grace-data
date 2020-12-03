@@ -1,7 +1,8 @@
 #!/bin/bash -u
 
 # keeping track of where I am
-DIR_NOW=$( cd $(dirname $0); pwd )
+DIR_NOW=$(cd $(dirname $BASH_SOURCE); pwd )
+
 #constants: filename stuff
 PREFIX=grace_1B
 
@@ -33,7 +34,7 @@ NOTICE: v03 data is available in monthly files; all other versions are available
 fi
 
 # converter
-CONV=$(find $DIR_NOW/software/ -name Bin2AsciiLevel1.e | sort | tail -n1)
+CONV=$(find "$DIR_NOW/software" -name Bin2AsciiLevel1.e | sort | tail -n1)
 
 # parsing inputs
 if [ $# -eq 1 ]
@@ -64,18 +65,18 @@ else
   # building package filename
   if [ "$VERSION" == "03" ]
   then
-    DAT_FILE=${PREFIX}_$YEAR-${MONTH}_$VERSION.dat
+    DAT_FILE=${PREFIX}_$YEAR-${MONTH}_$VERSION.tgz
     DAT_PROD=${PRODUCT}_$YEAR-${MONTH}-${DAY}_${SAT}_$VERSION.dat
   else
     DAY=${DATE:6:2}
-    DAT_FILE=${PREFIX}_$YEAR-${MONTH}-${DAY}_$VERSION.dat
+    DAT_FILE=${PREFIX}_$YEAR-${MONTH}-${DAY}_$VERSION.tgz
     DAT_PROD=${PRODUCT}_$YEAR-${MONTH}-${DAY}_${SAT}_$VERSION.dat
   fi
   #define local coordinates
   LOCALDIR=$DIR_NOW/L1B/$SOURCE/RL$VERSION/$YEAR
 
   #make sure tar file is extracted
-  [ -e "$LOCALDIR/$DAT_FILE" ] || $DIR_NOW/extract-l1b.sh $@ 1>&2 || exit $?
+  [ -e "$LOCALDIR/$DAT_PROD" ] || "$DIR_NOW/extract-l1b.sh" $@ 1>&2 || exit $?
 fi
 #double check
 if [ ! -e "$LOCALDIR/$DAT_PROD" ]
@@ -85,6 +86,6 @@ then
 fi
 
 #show contents
-$CONV -binfile $LOCALDIR/$DAT_PROD
+"$CONV" -binfile "$LOCALDIR/$DAT_PROD"
 
 
