@@ -42,14 +42,12 @@ PRODUCT=$2
 if [ "$VERSION" == "03" ]
 then
   TAR_FILE=${PREFIX}_$YEAR-${MONTH}_$VERSION.tgz
-  #DAT_FILE=${PRODUCT}_$YEAR-${MONTH}_$VERSION.dat
-    DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_${SAT}_$VERSION.dat
+  DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_${SAT}_$VERSION.dat
   MSG="Extracting v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH: $TAR_FILE"
 else
   DAY=${DATE:6:2}
   TAR_FILE=${PREFIX}_$YEAR-${MONTH}-${DAY}_$VERSION.tar.gz
-  #DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_$VERSION.dat
-    DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_${SAT}_$VERSION.dat
+  DAT_FILE=${PRODUCT}_$YEAR-${MONTH}-${DAY}_${SAT}_$VERSION.dat
   MSG="Extracting v$VERSION $SOURCE L1B GRACE data for $YEAR-$MONTH-$DAY: $TAR_FILE"
 fi
 #define local coordinates
@@ -69,12 +67,21 @@ then
 	echo "Already extracted $DAT_FILE"
 else
 	echo "$MSG"
- # extracting
- #find "$LOCALDIR/" -name '$PRODUCT*_${SAT}_*.dat' | tar -xvmk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --null --files-from - || exit $?
-	if [ "$VERSION" == "03" ]
-	then
-		tar -xvmk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --wildcards --no-anchored $DAT_FILE* || exit $?
-	else
-		tar -xvmzk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --wildcards --no-anchored $DAT_FILE* || exit $?
-	fi
+  function machine_is
+  {
+    OS=`uname -v`
+    [[ ! "${OS//$1/}" == "$OS" ]] && return 0 || return 1
+  }
+   # extracting
+  if machine_is Darwin
+  then
+    tar -xvmzk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --include=$PRODUCT*_${SAT}_*.dat || exit $?
+  else
+  	if [ "$VERSION" == "03" ]
+  	then
+  		tar -xvmk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --wildcards --no-anchored $DAT_FILE* || exit $?
+  	else
+  		tar -xvmzk -f "$LOCALDIR/$TAR_FILE" -C "$LOCALDIR" --wildcards --no-anchored $DAT_FILE* || exit $?
+  	fi
+  fi
 fi
