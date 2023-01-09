@@ -15,7 +15,7 @@ Optional arguments:
   - CSR   : 05, 05_mean_field, 06
   - GFZ   : 05, 05_WEEKLY, 06
   - JPL   : 05, 05.1, 06
-- year    : defines the year to download the data, can be multiple (must include the century, i.e. 20xy), defaults to 2021
+- year    : defines the year to download the data, can be multiple (must include the century, i.e. 20xy), defaults to 2022
 - echo    : show what would have been done but don't actually do anything
 - manual  : browse the remote data repository manually
 - help    : show this string
@@ -68,7 +68,7 @@ fi
 #patch missing year
 if [ ${#YEARS[@]} -eq 0 ]
 then
-  YEARS+=(2021)
+  YEARS+=(2022)
 fi
 
 #data characteristics
