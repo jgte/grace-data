@@ -8,27 +8,28 @@ function help_string()
   echo "$0 <source> <version> [ <year> ] [ echo ] [ manual ]
 
 Mandatory arguments:
-- source  : CSR, GFZ or JPL (no other options possible)
+- source  : CSR, GFZ or JPL (no other options possible), defaults to CSR
 
 Optional arguments:
-- version : as of 10/2018 (the 'RL' part is added internally), defaults to 06:
-  - CSR   : 05, 05_mean_field, 06
+- version : as of 10/2018 (the 'RL' part is added internally), defaults to 06.1:
+  - CSR   : 05, 05_mean_field, 06, 06.1
   - GFZ   : 05, 05_WEEKLY, 06
   - JPL   : 05, 05.1, 06
-- year    : defines the year to download the data, can be multiple (must include the century, i.e. 20xy), defaults to 2022
-- echo    : show what would have been done but don't actually do anything
-- manual  : browse the remote data repository manually
-- help    : show this string
+- year    : defines the year to download the data, can be multiple (must include the century, i.e. 20xy), defaults to 2023
+- echo    : show what would have been done but don't actually do anything (optional)
+- manual  : browse the remote data repository manually (optional)
+- secret  : use secret file (legacy: not relevant for ISDC, which is the server currently in use, optional)
+- help    : show this string (optional)
 "
 }
 
 #inits
-SOURCE=
-VERSION=06
+SOURCE=CSR
+VERSION=06.1
 ECHO=
 MANUAL=false
 YEARS=()
-
+SECRET=false
 for i in "$@"
 do
   case "$i" in
@@ -46,6 +47,9 @@ do
     ;;
     manual)
       MANUAL=true
+    ;;
+    secret)
+      SECRET=true
     ;;
     help|-help|--help|h|-h)
       help_string
@@ -68,15 +72,64 @@ fi
 #patch missing year
 if [ ${#YEARS[@]} -eq 0 ]
 then
-  YEARS+=(2022)
+  YEARS+=(2023)
 fi
+
+# No longer available:
+# REMOTEHOST=https://podaac-tools.jpl.nasa.gov
+# REMOTEDIR_BASE=drive/files/allData/gracefo/L2
+
+REMOTEHOST=ftp://isdcftp.gfz-potsdam.de
+REMOTEDIR_BASE=grace-fo/Level-2
+
+LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
+LOG=${0%.sh}.log
+
+if $SECRET
+then
+  SECRETFILE=$DIR_NOW/secret.txt
+  if [ ! -e "$SECRETFILE" ]
+  then
+    echo "ERROR: file $SECRETFILE missing: create this file with your ISDC username and password, each in one single line."
+    exit 3
+  fi
+  USERNAME=$(head -n1 $SECRETFILE)
+  PASSWORD=$(tail -n1 $SECRETFILE)
+  SECRET_ARGS="--user=$USERNAME --password=$PASSWORD"
+else
+  SECRET_ARGS=
+fi
+
+for y in ${YEARS[@]}
+do
+  REMOTEDIR=$REMOTEDIR_BASE/$SOURCE/RL$VERSION
+  $ECHO wget \
+    $SECRET_ARGS \
+    --recursive \
+    --timestamping \
+    --continue \
+    --no-parent \
+    --no-directories \
+    --accept "GSM-2_$y*.gz" \
+    --show-progress \
+    --verbose \
+    --directory-prefix=$LOCALDIR \
+    $REMOTEHOST/$REMOTEDIR
+done
+
+#extract contents
+$ECHO $DIR_NOW/extract-l2.sh $SOURCE
+
+exit
+
+#outdated FTP method follows (safe to ignore)
 
 #data characteristics
 GLOB="GSM-2*"
 case $SOURCE in
 CSR)
   case $VERSION in
-  06)
+  06.1)
     #do nothing
   ;;
   *)
@@ -91,61 +144,6 @@ JPL)
   #do nothing
 ;;
 esac
-
-REMOTEHOST=https://podaac-tools.jpl.nasa.gov
-LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
-LOG=${0%.sh}.log
-
-SECRETFILE=$DIR_NOW/secret.txt
-if [ ! -e "$SECRETFILE" ]
-then
-  echo "ERROR: file $SECRETFILE missing: create this file with your PO.DAAC username and password, each in one single line."
-  exit 3
-fi
-USERNAME=$(head -n1 $SECRETFILE)
-PASSWORD=$(tail -n1 $SECRETFILE)
-
-#uncomment this if you haven't downloaded GRACE data yet:
-
-# REMOTEDIR=drive/files/allData/grace/L2/$SOURCE/RL$VERSION/
-# wget \
-#   --user=$USERNAME \
-#   --password=$PASSWORD \
-#   --recursive \
-#   --timestamping \
-#   --continue \
-#   --no-parent \
-#   --no-directories \
-#   --accept "*.gz" \
-#   --show-progress \
-#   --verbose \
-#   --directory-prefix=$LOCALDIR \
-#   $REMOTEHOST/$REMOTEDIR
-
-for y in ${YEARS[@]}
-do
-  REMOTEDIR=drive/files/allData/gracefo/L2/$SOURCE/RL$VERSION/$y
-  $ECHO wget \
-    --user=$USERNAME \
-    --password=$PASSWORD \
-    --recursive \
-    --timestamping \
-    --continue \
-    --no-parent \
-    --no-directories \
-    --accept "*.gz" \
-    --show-progress \
-    --verbose \
-    --directory-prefix=$LOCALDIR \
-    $REMOTEHOST/$REMOTEDIR
-done
-
-#extract contents
-$ECHO $DIR_NOW/extract-l2.sh $@
-
-exit
-
-#outdated FTP method follows
 
 LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
 
