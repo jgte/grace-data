@@ -18,13 +18,16 @@ Optional arguments:
 }
 
 #inits
-SOURCE=
-VERSION=06
+SOURCE=CSR
+VERSION=06.2
 ECHO=
 
 for i in "$@"
 do
   case "$i" in
+    -x)
+      set -x
+    ;;
     CSR|GFZ|JPL)
       SOURCE=$i
     ;;

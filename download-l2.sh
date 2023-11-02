@@ -25,7 +25,7 @@ Optional arguments:
 
 #inits
 SOURCE=CSR
-VERSION=06.1
+VERSION=06.2
 ECHO=
 MANUAL=false
 YEARS=()
@@ -33,6 +33,9 @@ SECRET=false
 for i in "$@"
 do
   case "$i" in
+    -x)
+      set -x
+    ;;
     CSR|GFZ|JPL)
       SOURCE=$i
     ;;
@@ -47,6 +50,7 @@ do
     ;;
     manual)
       MANUAL=true
+      SECRET=true
     ;;
     secret)
       SECRET=true
@@ -100,6 +104,12 @@ else
   SECRET_ARGS=
 fi
 
+if $MANUAL
+then
+  $ECHO lftp -e "user $USERNAME $PASSWORD; open $REMOTEHOST; cd $REMOTEDIR_BASE; ls"
+  exit
+fi
+
 for y in ${YEARS[@]}
 do
   REMOTEDIR=$REMOTEDIR_BASE/$SOURCE/RL$VERSION
@@ -118,7 +128,7 @@ do
 done
 
 #extract contents
-$ECHO $DIR_NOW/extract-l2.sh $SOURCE
+$ECHO $DIR_NOW/extract-l2.sh $SOURCE $VERSION
 
 exit
 
