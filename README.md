@@ -43,7 +43,15 @@ Optional inputs:
 
 - `download-l1b.sh`: download the L1B data (one day at a time);
 ```
-DOWNLOAD-L1B_HELP
+/Users/teixeira/cloud/surfdrive/data/grace/download-l1b.sh <date> [ <version> ] [ <source> ]
+
+ - <date> in YYYYMM[DD]
+
+Optional inputs:
+ - version : release versions, defaults to '03'
+ - source  : data source institute, no defaults to 'JPL'
+
+ NOTICE: v03 data is available in monthly files; all other versions are available in daily files
 ```
 
 - `batch-download-l1b.sh`: download the L1B data for the given 4-digit list of years;

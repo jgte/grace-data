@@ -18,7 +18,7 @@ EXTRACT_L1B_HELP
 
 - `download-l1b.sh`: download the L1B data (one day at a time);
 ```
-DOWNLOAD-L1B_HELP
+DOWNLOAD_L1B_HELP
 ```
 
 - `batch-download-l1b.sh`: download the L1B data for the given 4-digit list of years;
