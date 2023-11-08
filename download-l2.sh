@@ -11,7 +11,7 @@ Mandatory arguments:
 - source  : CSR, GFZ or JPL (no other options possible), defaults to CSR
 
 Optional arguments:
-- version : as of 10/2018 (the 'RL' part is added internally), defaults to 06.1:
+- version : as of 10/2018 (the 'RL' part is added internally), defaults to '$VERSION:
   - CSR   : 05, 05_mean_field, 06, 06.1
   - GFZ   : 05, 05_WEEKLY, 06
   - JPL   : 05, 05.1, 06
@@ -24,7 +24,7 @@ Optional arguments:
 }
 
 #inits
-SOURCE=CSR
+SOURCE=
 VERSION=06.2
 ECHO=
 MANUAL=false
@@ -80,13 +80,13 @@ then
   YEARS+=(2023)
 fi
 
-# No longer available:
+# deprecated:
 # REMOTEHOST=https://podaac-tools.jpl.nasa.gov
 # REMOTEDIR_BASE=drive/files/allData/gracefo/L2
 
 REMOTEHOST=ftp://isdcftp.gfz-potsdam.de
-REMOTEDIR_BASE=grace-fo/Level-2
 
+#define local coordinates
 LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
 LOG=${0%.sh}.log
 
@@ -101,18 +101,28 @@ then
   USERNAME=$(head -n1 $SECRETFILE)
   PASSWORD=$(tail -n1 $SECRETFILE)
   SECRET_ARGS="--user=$USERNAME --password=$PASSWORD"
+  SECRET_ARGS_MANUAL="user $USERNAME $PASSWORD;"
 else
   SECRET_ARGS=
+  SECRET_ARGS_MANUAL=
 fi
 
 if $MANUAL
 then
-  $ECHO lftp -e "user $USERNAME $PASSWORD; open $REMOTEHOST; cd $REMOTEDIR_BASE; ls"
+  $ECHO lftp -e "$SECRET_ARGS_MANUAL open $REMOTEHOST; cd grace-fo/Level-2; ls"
   exit
 fi
 
 for y in ${YEARS[@]}
 do
+  #resolved GRACE/GRACE-FO
+  if [ $y -le 2017 ]
+  then
+    REMOTEDIR_BASE=grace/Level-2
+  else
+    REMOTEDIR_BASE=grace-fo/Level-2
+  fi
+
   REMOTEDIR=$REMOTEDIR_BASE/$SOURCE/RL$VERSION
   $ECHO wget \
     $SECRET_ARGS \
@@ -130,58 +140,3 @@ done
 
 #extract contents
 $ECHO $DIR_NOW/extract-l2.sh $SOURCE $VERSION
-
-exit
-
-#outdated FTP method follows (safe to ignore)
-
-#data characteristics
-GLOB="GSM-2*"
-case $SOURCE in
-CSR)
-  case $VERSION in
-  06.1)
-    #do nothing
-  ;;
-  *)
-    GLOB+="_0060_*"
-  ;;
-  esac
-;;
-GFZ)
-  #do nothing
-;;
-JPL)
-  #do nothing
-;;
-esac
-
-LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
-
-#create sink directory
-[ ! -d $LOCALDIR ] && $ECHO mkdir -p $LOCALDIR
-
-LFTPARGS="--only-newer --no-empty-dirs --loop --parallel=4 --include-glob=$GLOB"
-LFTPOPEN="user $USERNAME $PASSWORD; open $REMOTEHOST"
-
-if $MANUAL
-then
-  $ECHO lftp -e "$LFTPOPEN"
-  exit
-fi
-
-#mirror remote to local
-LFTPCOM+="
-mirror $LFTPARGS $REMOTEDIR $LOCALDIR --log $LOG"
-#debug
-[[ ! "${@//debug/}" == "$@" ]] && {
-  LFTPCOM+=" --dry-run"
-  LFTPCOM=${LFTPCOM/--loop/}
-}
-
-$ECHO lftp -e "$LFTPOPEN" <<%
-$LFTPCOM
-%
-
-[ -z "$ECHO" ] || echo "$LFTPCOM"
-

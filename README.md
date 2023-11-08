@@ -8,13 +8,13 @@ The following scripts are included:
 
 - `cat-l1b.sh`: show the contents of the L1B data (one day and product at a time):
 ```
-cat-l1b.sh [ <date> <product> [ <sat> [ <version> [ <source> ] ] ] | <dat file> ]
+cat-l1b.sh <date> <product> [ <sat> ] [ <version> ] [ <source> ] ]
 
 Either:
   - <date> in YYYYMM[DD]
   - <product> name: ACC1B, AHK1B, GNV1B, KBR1B, MAS1B, SCA1B, THR1B, CLK1B, GPS1B, IHK1B, MAG1B, TIM1B, TNK1B, USO1B, VSL1B
   Optional argument:
-   - sat     : GRACE A or B, defaults to 'A' (irrelevant if <product> is 'KBR1B')
+   - sat     : GRACE A or B or GRACE-FO C or D, defaults to 'A' (irrelevant if <product> is 'KBR1B')
    - version : release versions, defaults to '03'
    - source  : data source institute, defaults to 'JPL'
   NOTICE:
@@ -28,15 +28,16 @@ NOTICE: v03 data is available in monthly files; all other versions are available
 
 - `extract-l1b.sh`: extract the contents of the L1B data (one day and product at a time):
 ```
-extract-l1b.sh <date> <product> [ <sat> [ <version> [ <source> ] ] ]
+extract-l1b.sh <date> <product> [ <sat> ] [ <version> ] [ <source> ]
 
  - <date> in YYYYMM
  - <product> name: ACC1B, AHK1B, GNV1B, KBR1B, MAS1B, SCA1B, THR1B, CLK1B, GPS1B, IHK1B, MAG1B, TDP1B, TIM1B, TNK1B, USO1B, VSL1B
 
 Optional inputs:
- - sat     : GRACE A or B, defaults to 'A' (irrelevant if <product> is 'KBR1B')
+ - sat     : GRACE A or B or GRACE-FO C or D, defaults to 'A' (irrelevant if <product> is 'KBR1B')
  - version : release versions, defaults to '03'
  - source  : data source institute, defaults to 'JPL'
+
  NOTICE: v03 data is available in monthly files; all other versions are available in daily files
 ```
 
@@ -56,7 +57,7 @@ Mandatory arguments:
 - source  : CSR, GFZ or JPL (no other options possible), defaults to CSR
 
 Optional arguments:
-- version : as of 10/2018 (the 'RL' part is added internally), defaults to 06.1:
+- version : as of 10/2018 (the 'RL' part is added internally), defaults to '06.2:
   - CSR   : 05, 05_mean_field, 06, 06.1
   - GFZ   : 05, 05_WEEKLY, 06
   - JPL   : 05, 05.1, 06
