@@ -11,7 +11,7 @@ SAT='A'
 VERSION=03
 SOURCE=JPL
 
-if [ $# -lt 2 ]
+if [ $# -lt 2 ] || [ "$1" == "help" ]
 then
   echo "\
 extract-l1b.sh <date> <product> [ <sat> [ <version> [ <source> ] ] ]

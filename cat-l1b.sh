@@ -11,7 +11,7 @@ SAT='A'
 VERSION=03
 SOURCE=JPL
 
-if [ $# -lt 1 ]
+if [ $# -lt 1 ] || [ "$1" == "help" ]
 then
   echo "\
 cat-l1b.sh [ <date> <product> [ <sat> [ <version> [ <source> ] ] ] | <dat file> ]

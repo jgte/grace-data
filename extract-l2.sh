@@ -39,6 +39,7 @@ do
     ;;
     help|-help|--help|h|-h)
       help_string
+      exit 1
     ;;
     *)
       echo "ERROR: cannot handle input argument '$i'"

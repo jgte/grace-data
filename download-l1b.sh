@@ -10,7 +10,7 @@ PREFIX=grace_1B
 VERSION=03
 SOURCE=JPL
 
-if [ $# -lt 1 ]
+if [ $# -lt 1 ] || [ "$1" == "help" ]
 then
   echo "\
 $0 <date> [ <version> [ <source> ] ]
