@@ -74,7 +74,7 @@ fi
 YEAR=${DATE:0:4}
 MONTH=${DATE:4:2}
 
-#resolved GRACE/GRACE-FO
+#resolve GRACE/GRACE-FO
 if [ $YEAR -le 2017 ]
 then
   REMOTEDIR_SAT=grace/Level-1B
