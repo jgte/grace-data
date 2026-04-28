@@ -77,7 +77,7 @@ fi
 #patch missing year
 if [ ${#YEARS[@]} -eq 0 ]
 then
-  YEARS+=(2024)
+  YEARS+=(2026)
 fi
 
 # deprecated:
