@@ -112,7 +112,7 @@ fi
 
 if $MANUAL
 then
-  $ECHO lftp -e "$SECRET_ARGS_MANUAL open $REMOTEHOST; cd grace-fo/Level-2; ls"
+  $ECHO lftp -e "$SECRET_ARGS_MANUAL open $REMOTEHOST; cd grace-fo/Level-2/$SOURCE; ls"
   exit
 fi
 
