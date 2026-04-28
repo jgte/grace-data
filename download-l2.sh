@@ -25,7 +25,7 @@ Optional arguments:
 
 #inits
 SOURCE=
-VERSION=06.2
+VERSION=06.3
 ECHO=
 MANUAL=false
 YEARS=()
