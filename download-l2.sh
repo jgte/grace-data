@@ -84,7 +84,10 @@ fi
 # REMOTEHOST=https://podaac-tools.jpl.nasa.gov
 # REMOTEDIR_BASE=drive/files/allData/gracefo/L2
 
-REMOTEHOST=ftp://isdcftp.gfz-potsdam.de
+# deprecated:
+# REMOTEHOST=ftp://isdcftp.gfz-potsdam.de
+
+REMOTEHOST=https://isdc-data.gfz.de
 
 #define local coordinates
 LOCALDIR=$DIR_NOW/L2/$SOURCE/RL$VERSION/
